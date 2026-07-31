@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+// URL base da API, definida via variável de ambiente VITE_API_URL (Vercel/local .env.local)
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 api.interceptors.request.use((config) => {
@@ -37,7 +38,7 @@ api.interceptors.response.use(
       try {
         if (!refreshEmAndamento) {
           refreshEmAndamento = axios
-            .post('http://localhost:8080/auth/refresh', { refreshToken })
+            .post(`${import.meta.env.VITE_API_URL}/auth/refresh`, { refreshToken })
             .then((response) => {
               localStorage.setItem('token', response.data.token);
               localStorage.setItem('refreshToken', response.data.refreshToken);
