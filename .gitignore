@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# variáveis de ambiente (importante adicionar, se não tiver)
+.env
+.env.local
+
+# logs
+*.log

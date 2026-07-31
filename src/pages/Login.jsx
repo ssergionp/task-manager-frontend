@@ -1,11 +1,16 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosConfig';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -14,8 +19,8 @@ function Login() {
 
     try {
       const response = await api.post('/auth/login', { username, password });
-      console.log('Login bem-sucedido:', response.data);
-      // por enquanto só logamos no console — vamos guardar o token na próxima fase
+      login(response.data.token, response.data.refreshToken);
+      navigate('/tarefas');
     } catch (error) {
       setErro('Usuário ou senha inválidos');
       console.error(error);
