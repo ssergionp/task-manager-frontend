@@ -3,6 +3,18 @@ import { useAuth } from '../context/AuthContext';
 import { listarTarefas, criarTarefa, atualizarTarefa, deletarTarefa } from '../api/tasksService';
 import TarefaForm from '../components/TarefaForm';
 
+const CORES_STATUS = {
+  TODO: 'bg-gray-100 text-gray-700',
+  IN_PROGRESS: 'bg-yellow-100 text-yellow-800',
+  DONE: 'bg-green-100 text-green-800',
+};
+
+const TEXTO_STATUS = {
+  TODO: 'A fazer',
+  IN_PROGRESS: 'Em andamento',
+  DONE: 'Concluída',
+};
+
 function Tarefas() {
   const { logout } = useAuth();
   const [tarefas, setTarefas] = useState([]);
@@ -74,43 +86,90 @@ function Tarefas() {
   }
 
   if (carregando) {
-    return <p>Carregando tarefas...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <p className="text-gray-500">Carregando tarefas...</p>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1>Minhas Tarefas</h1>
-      <button onClick={logout}>Sair</button>
-      <button onClick={handleNovaTarefa}>+ Nova Tarefa</button>
+    <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Minhas Tarefas</h1>
+          <div className="flex gap-3">
+            <button
+              onClick={handleNovaTarefa}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-700 transition"
+            >
+              + Nova Tarefa
+            </button>
+            <button
+              onClick={logout}
+              className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md font-medium hover:bg-gray-300 transition"
+            >
+              Sair
+            </button>
+          </div>
+        </div>
 
-      {erro && <p style={{ color: 'red' }}>{erro}</p>}
+        {erro && (
+          <p className="text-red-600 bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+            {erro}
+          </p>
+        )}
 
-      {mostrarFormulario && (
-        <TarefaForm
-          tarefaExistente={tarefaEmEdicao}
-          onSalvar={handleSalvar}
-          onCancelar={handleCancelar}
-        />
-      )}
+        {mostrarFormulario && (
+          <TarefaForm
+            tarefaExistente={tarefaEmEdicao}
+            onSalvar={handleSalvar}
+            onCancelar={handleCancelar}
+          />
+        )}
 
-      {tarefas.length === 0 ? (
-        <p>Nenhuma tarefa encontrada.</p>
-      ) : (
-        <ul>
-          {tarefas.map((tarefa) => (
-            <li key={tarefa.id}>
-              <strong>{tarefa.title}</strong> — {tarefa.status}
-              <br />
-              {tarefa.description}
-              <br />
-              Vencimento: {tarefa.dueDate}
-              <br />
-              <button onClick={() => handleEditar(tarefa)}>Editar</button>
-              <button onClick={() => handleDeletar(tarefa.id)}>Excluir</button>
-            </li>
-          ))}
-        </ul>
-      )}
+        {tarefas.length === 0 ? (
+          <p className="text-gray-500 text-center py-8">Nenhuma tarefa encontrada.</p>
+        ) : (
+          <ul className="space-y-3">
+            {tarefas.map((tarefa) => (
+              <li
+                key={tarefa.id}
+                className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-start"
+              >
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <strong className="text-gray-800">{tarefa.title}</strong>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full font-medium ${CORES_STATUS[tarefa.status]}`}
+                    >
+                      {TEXTO_STATUS[tarefa.status]}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 text-sm">{tarefa.description}</p>
+                  <p className="text-gray-400 text-xs mt-1">
+                    Vencimento: {tarefa.dueDate}
+                  </p>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    onClick={() => handleEditar(tarefa)}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDeletar(tarefa.id)}
+                    className="text-red-600 hover:text-red-800 text-sm font-medium"
+                  >
+                    Excluir
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
